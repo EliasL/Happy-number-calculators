@@ -1,6 +1,6 @@
 import math
 import itertools
-
+import copy
 
 def square(x):
     return int(x) * int(x)
@@ -22,7 +22,7 @@ def findD(n, number, d):
 
 
 def compacter1(number):
-    sofar=[]
+    sofar = []
     for i in number:
         if i != 9:
             sofar.append(i)
@@ -39,7 +39,7 @@ def compacter1(number):
                 number.insert(0, k)
                 number.insert(0, j)
                 return number
-    return number
+    return makenumber(number)
 
 
 def testing(number,list):
@@ -48,31 +48,42 @@ def testing(number,list):
 
 
 def switch(number, old, new):
+    test = copy.copy(number)
     old = list(map(int, str(old)))
     new = map(int, str(new))
-    for i in number:
-        if i in old:
-            number.remove(i)
-            old.remove(i)
+    for i in old:
+        test.remove(i)
     for i in new:
-        number.append(i)
-    number.sort()
-    return number
+        test.append(i)
+    test.sort()
+    return test
+
+
+def makenumber(n):
+    return int(''.join(map(str, n)))
 
 
 def compacter2(number):
     possible = []
-    for L in range(0, len(number)):
+    length = len(number)-number.count(9)+2
+    for L in range(0, length):
       for subset in itertools.combinations(number, L+1):
         a = list(subset)
         a = int(''.join(map(str, a)))
         for i in range(0, 101):
             if happy(a) == happy(i) and a != i and a > i:
-                print(str(a) + " is the same as " + str(i))
-                #possible.append(switch(number, a, i))
+                #print(str(a) + " is the same as " + str(i))
+                if switch(number, a, i) not in possible:
+                    possible.append(switch(number, a, i))
     #print(possible)
-
-    return number
+    for i in range(0,len(possible)):
+        possible[i] = makenumber(possible[i])
+    possible.sort()
+    if len(possible) > 0:
+        print("compacted")
+        return possible[0]
+    else:
+        return makenumber(number)
 
 
 def reverse(n, deep_compressing):
@@ -93,7 +104,7 @@ def reverse(n, deep_compressing):
         number = compacter2(number)
     else:
         number = compacter1(number)
-    return int(''.join(map(str, number)))
+    return number
 
 
 
